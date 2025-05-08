@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baron Xiters</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: Arial, sans-serif;
+      background: #1a0000;
+      color: white;
+      overflow-x: hidden;
+    }
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .intro, .main-content {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      background: rgba(26, 0, 0, 0.8);
+    }
+    h1.fade {
+      font-size: 6em;
+      margin-bottom: 20px;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(90deg, #6e0000, #ff0000, #ff4d4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeTitle 3s infinite alternate;
+    }
+    @keyframes fadeTitle {
+      from { opacity: 1; }
+      to { opacity: 0.2; }
+    }
+    .enter-box {
+      background: #ff0000;
+      padding: 30px 40px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid white;
+    }
+    .enter-box h2 {
+      font-size: 2em;
+      color: white;
+      margin-bottom: 10px;
+    }
+    .enter-box p {
+      font-size: 0.9em;
+      color: white;
+    }
+    .main-content {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .section {
+      margin-top: 30px;
+      background: rgba(255, 0, 0, 0.2);
+      padding: 25px;
+      border-radius: 12px;
+      width: 95%;
+      max-width: 700px;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+    .section h2 {
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .field-group textarea {
+      flex: 1;
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: none;
+      background: #eee;
+      color: black;
+      resize: vertical;
+      height: 60px;
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .btn-icon, .btns button, .convert-btn {
+      background-color: #ff0000;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    input[type="file"] {
+      margin-top: 10px;
+      background-color: #eee;
+      color: black;
+      padding: 10px;
+      border-radius: 5px;
+      width: 100%;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+
+  <div class="intro" id="intro">
+    <h1 class="fade">Baron Xiters</h1>
+    <div class="enter-box" onclick="enterSite()">
+      <h2>Click!</h2>
+      <p>click here to enter</p>
+    </div>
+  </div>
+
+  <div class="main-content" id="main">
+    <div class="section">
+      <h2>AOB Convert</h2>
+      <div class="field-group">
+        <textarea id="input" placeholder="Input"></textarea>
+        <div class="btn-group">
+          <button class="btn-icon" onclick="copyToClipboard('input')">copy</button>
+          <button class="btn-icon" onclick="clearField('input')">delete</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <textarea id="output" placeholder="Output" readonly></textarea>
+        <div class="btn-group">
+          <button class="btn-icon" onclick="copyToClipboard('output')">copy</button>
+          <button class="btn-icon" onclick="clearField('output')">delete</button>
+        </div>
+      </div>
+      <div class="btns">
+        <button onclick="aobToByte()">Aob to Byte</button>
+        <button onclick="byteToAob()">Byte to Aob</button>
+        <button onclick="clearAll()">Clear All</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Image Convert</h2>
+      <input type="file" id="imageInput" accept="image/*">
+      <div class="btns">
+        <button class="convert-btn" onclick="convertImageToCpp()">Convert Image to CPP</button>
+      </div>
+      <a id="downloadLink" style="display:none;margin-top:10px;color:white;text-align:center"></a>
+    </div>
+
+    <div class="footer">Dev by BaronX</div>
+  </div>
+
+  <script>
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 100 },
+        color: { value: "#ffffff" },
+        shape: { type: "star" },
+        opacity: {
+          value: 1,
+          random: true,
+          anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+        },
+        size: {
+          value: 3,
+          random: true
+        },
+        line_linked: { enable: false },
+        move: {
+          enable: true,
+          speed: 0.6,
+          random: true,
+          straight: false,
+          out_mode: "out"
+        }
+      },
+      interactivity: {
+        events: {
+          resize: true
+        }
+      },
+      retina_detect: true
+    });
+
+    function enterSite() {
+      document.getElementById('intro').style.display = 'none';
+      document.getElementById('main').style.display = 'flex';
+    }
+
+    function aobToByte() {
+      const input = document.getElementById('input').value.trim();
+      const result = input.split(/\s+/).map(x => `0x${x}`).join(', ');
+      document.getElementById('output').value = result;
+    }
+
+    function byteToAob() {
+      const input = document.getElementById('input').value.trim();
+      const result = input.replace(/0x/gi, '').replace(/,\s*/g, ' ').toUpperCase();
+      document.getElementById('output').value = result;
+    }
+
+    function clearAll() {
+      document.getElementById('input').value = '';
+      document.getElementById('output').value = '';
+    }
+
+    function copyToClipboard(id) {
+      const field = document.getElementById(id);
+      field.select();
+      document.execCommand("copy");
+    }
+
+    function clearField(id) {
+      document.getElementById(id).value = '';
+    }
+
+    function convertImageToCpp() {
+      const file = document.getElementById("imageInput").files[0];
+      if (!file) return alert("Please select an image.");
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const arrayBuffer = e.target.result;
+        const bytes = new Uint8Array(arrayBuffer);
+        let cppArray = "unsigned char imageData[] = {\n  ";
+
+        for (let i = 0; i < bytes.length; i++) {
+          cppArray += `0x${bytes[i].toString(16).padStart(2, '0')}`;
+          cppArray += (i < bytes.length - 1) ? ', ' : '';
+          if ((i + 1) % 12 === 0) cppArray += '\n  ';
+        }
+
+        cppArray += "\n};";
+
+        const blob = new Blob([cppArray], { type: "text/plain" });
+        const link = document.getElementById("downloadLink");
+        link.href = URL.createObjectURL(blob);
+        link.download = "image_data.cpp";
+        link.textContent = "Download image_data.cpp";
+        link.style.display = 'block';
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  </script>
+</body>
+</html>
