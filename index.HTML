@@ -183,6 +183,16 @@
       <a id="downloadLink" style="display:none;margin-top:10px;color:white;text-align:center"></a>
     </div>
 
+    <div class="section">
+      <h2>Font Convert</h2>
+      <input type="file" id="fontInput" accept=".ttf,.otf,.woff,.woff2" />
+      <div class="btns">
+        <button class="convert-btn" onclick="convertFontToCpp()">Convert Font to CPP</button>
+        <button class="convert-btn" onclick="clearFontInput()">Clear</button>
+      </div>
+      <a id="fontDownloadLink" style="display:none;margin-top:10px;color:white;text-align:center"></a>
+    </div>
+
     <div class="footer">Dev by BaronX</div>
   </div>
 
@@ -276,6 +286,44 @@
         link.style.display = 'block';
       };
       reader.readAsArrayBuffer(file);
+    }
+
+    function convertFontToCpp() {
+  const file = document.getElementById("fontInput").files[0];
+  if (!file) return alert("Please select a font file.");
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const arrayBuffer = e.target.result;
+    const bytes = new Uint8Array(arrayBuffer);
+    let cppArray = "unsigned char fontData[] = {\n  ";
+
+    for (let i = 0; i < bytes.length; i++) {
+      cppArray += `0x${bytes[i].toString(16).padStart(2, '0')}`;
+      cppArray += (i < bytes.length - 1) ? ', ' : '';
+      if ((i + 1) % 12 === 0) cppArray += '\n  ';
+    }
+
+    cppArray += "\n};";
+
+    const blob = new Blob([cppArray], { type: "text/plain" });
+    const downloadUrl = URL.createObjectURL(blob);
+
+    const tempLink = document.createElement("a");
+    tempLink.href = downloadUrl;
+    tempLink.download = "font_data.cpp";
+    document.body.appendChild(tempLink);
+    tempLink.click();
+    document.body.removeChild(tempLink);
+    URL.revokeObjectURL(downloadUrl);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+
+    function clearFontInput() {
+      document.getElementById("fontInput").value = '';
+      document.getElementById("fontDownloadLink").style.display = 'none';
     }
   </script>
 </body>
